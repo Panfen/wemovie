@@ -17,7 +17,11 @@
   },
   "homepage": "https://github.com/Panfen/wemovie#readme",
   "dependencies": {
+    "bluebird": "^3.5.0",
+    "fs": "0.0.1-security",
     "koa": "^1.2.5",
+    "path": "^0.12.7",
+    "request": "^2.81.0",
     "sha1": "^1.1.1"
   }
 }
