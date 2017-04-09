@@ -10,7 +10,7 @@ var rawBody = require('raw-body');
 var Wechat = require('./wechat');
 var util = require('./util');
 
-module.exports = function(opts){
+module.exports = function(opts,handler){
 	var wechat = new Wechat(opts);
 	return function *(next){
 		var that = this;
@@ -34,21 +34,12 @@ module.exports = function(opts){
 
 			var message = util.formatMessage(content.xml);
 			
-			if(message.MsgType === 'event'){
-				if(message.Event === 'subscribe'){
-					var createTime = new Date().getTime();
-					that.status = 200;
-					that.type = 'application/xml';
-					that.body = '<xml>'+
-											'<ToUserName><![CDATA['+ message.FromUserName +']]></ToUserName>'+
-											'<FromUserName><![CDATA['+ message.ToUserName +']]></FromUserName>'+
-											'<CreateTime>'+createTime+'</CreateTime>'+
-											'<MsgType><![CDATA[text]]></MsgType>'+
-											'<Content><![CDATA[终于等到你，还好我没放弃]]></Content>'+
-											'</xml>'
-					return;
-				}
-			}
+			this.weixin = message;  //挂载消息
+
+			yield handler.call(this,next);   //转到外层逻辑
+
+			//真正回复
+			wechat.replay.call(this);
 
 		}
 	};

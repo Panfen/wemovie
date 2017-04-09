@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>heredoc - browser tests</title>
+  <link rel="stylesheet" type="text/css" href="/node_modules/mocha/mocha.css">
+</head>
+<body>
+  <div id="mocha"></div>
+  <script src="/node_modules/mocha/mocha.js"></script>
+  <script src="/node_modules/should/should.js"></script>
+  <script src="http://amo.alicdn.com/L1/377/101010/sea.js"></script>
+  <script src="/config.js"></script>
+  <script>
+    /* eslint-disable */
+    mocha.ui('bdd')
+    define('should', should)  // use the pre-build version of should
+    seajs.use('heredoc/test/runner', function() {
+      mocha.run()
+    })
+  </script>
+</body>
+</html>
