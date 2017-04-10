@@ -73,5 +73,4 @@ Wechat.prototype.replay = function(){
 	this.body = xml;
 }
 
-
 module.exports = Wechat;

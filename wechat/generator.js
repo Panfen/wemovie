@@ -13,7 +13,6 @@ var util = require('./util');
 module.exports = function(opts,handler){
 	var wechat = new Wechat(opts);
 	return function *(next){
-		var that = this;
 		var token = opts.token;
 		var signature = this.query.signature;
 		var nonce = this.query.nonce;
@@ -39,6 +38,7 @@ module.exports = function(opts,handler){
 			yield handler.call(this,next);   //转到外层逻辑
 
 			//真正回复
+			console.log("body:"+this.body);
 			wechat.replay.call(this);
 
 		}

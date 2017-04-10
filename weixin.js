@@ -7,11 +7,14 @@
 exports.reply = function* (next){
 	var message = this.weixin;
 
-	if(message.magType === 'event'){
+	if(message.MsgType === 'event'){
 		if(message.Event === 'subscribe'){
-			if(message.EventKey) console.log('扫描二维码关注：'+message.EventKey+' '+message.ticket);
+			if(message.EventKey) {
+				console.log('扫描二维码关注：'+message.EventKey+' '+message.ticket);
+			}
 			this.body = '终于等到你，还好我没放弃';
 		}else if(message.Event === 'unsubscribe'){
+			this.body = '';
 			console.log(message.FromUserName +' 悄悄地走了...');
 		}
 	}else{
