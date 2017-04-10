@@ -37,10 +37,7 @@ module.exports = function(opts,handler){
 
 			yield handler.call(this,next);   //转到外层逻辑
 
-			//真正回复
-			console.log("body:"+this.body);
-			wechat.replay.call(this);
-
+			wechat.replay.call(this);  //真正回复
 		}
 	};
 }
