@@ -4,6 +4,12 @@
  */
 'use strict'
 
+
+var config = require('./config');
+var Wechat = require('./wechat/wechat');
+
+var wechatApi = new Wechat(config.wechat);
+
 exports.reply = function* (next){
 	var message = this.weixin;
 
@@ -31,19 +37,28 @@ exports.reply = function* (next){
 			reply = '金刚:骷髅岛';
 		}
 		else if(content === '2'){
+			var data = yield wechatApi.uploadTempMaterial('image',__dirname+'/public/king.jpg');
 			reply = {
 				type:'image',
-				mediaId:'http://tu.23juqing.com/d/file/html/gndy/dyzz/2017-04-09/da9c7a64ab7df196d08b4b327ef248f2.jpg'
+				mediaId:data.media_id
 			}
 		}
 		else if(content === '3'){
+			var data = yield wechatApi.uploadTempMaterial('voice',__dirname+'/public/aiyou.mp3');
+			reply = {
+				type:'voice',
+				mediaId:data.media_id
+			}
+		}
+		else if(content === '4'){
 			reply = [{
 				title:'金刚.骷髅岛',
 				description:'南太平洋上的神秘岛屿——骷髅岛。史上最大金刚与邪恶骷髅蜥蜴的较量。',
 				picUrl:'http://tu.23juqing.com/d/file/html/gndy/dyzz/2017-04-09/da9c7a64ab7df196d08b4b327ef248f2.jpg',
-				url:''
+				url:'http://www.piaohua.com/html/dongzuo/2017/0409/31921.html'
 			}];
 		}
+		// ... 其他回复类型
 		this.body = reply;
 	}
 
