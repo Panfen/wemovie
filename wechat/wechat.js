@@ -18,6 +18,13 @@ var api = {
 	uploadPermOther:prefix+'material/add_material?',   //access_token=ACCESS_TOKEN  上传永久其他素材
 	getPermMaterial:prefix+'material/get_material?',   //access_token=ACCESS_TOKEN 获取永久素材，POST请求
 	delPermMaterial:prefix+'material/del_material?',   //access_token=ACCESS_TOKEN 删除永久素材，POST请求
+	menu:{
+		create:prefix+'menu/create?',  //access_token=ACCESS_TOKEN  创建菜单
+		get:prefix+'menu/get?',        //access_token=ACCESS_TOKE  获取菜单,GET请求
+		delete:prefix+'menu/delete?',  //access_token=ACCESS_TOKEN	删除菜单,GET请求
+		getInfo:prefix+'get_current_selfmenu_info?'  //access_token=ACCESS_TOKEN  获取自定义菜单配置接口
+	}
+
 }
 
 function Wechat(opts){     //构造函数
@@ -169,6 +176,7 @@ Wechat.prototype.delMaterial = function(mediaId){
 		});
 	});
 }
+
 Wechat.prototype.replay = function(){
 	var content = this.body;
 	var message = this.weixin;
@@ -178,6 +186,66 @@ Wechat.prototype.replay = function(){
 	this.status = 200;
 	this.type = 'application/xml';
 	this.body = xml;
+}
+
+//创建菜单
+Wechat.prototype.createMenu = function(menu){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.menu.create + 'access_token=' + data.access_token;
+			request({url:url,method:'POST',body:menu,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.errcode === '0'){
+					resolve();
+				}else{
+					throw new Error('create menu failed!');
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
+
+//获取菜单
+Wechat.prototype.getMenu = function(){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.menu.get + 'access_token=' + data.access_token;
+			request({url:url,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.menu){
+					resolve();
+				}else{
+					throw new Error('get menu failed!');
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
+
+//获取菜单
+Wechat.prototype.deleteMenu = function(){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.menu.delete + 'access_token=' + data.access_token;
+			request({url:url,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.errcode === '0'){
+					resolve();
+				}else{
+					throw new Error('delete menu failed!');
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
 }
 
 module.exports = Wechat;
