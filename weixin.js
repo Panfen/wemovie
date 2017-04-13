@@ -11,12 +11,6 @@ var menu = require('./menu');
 
 var wechatApi = new Wechat(config.wechat);
 
-wechatApi.deleteMenu().then(function(){
-	return wechatApi.createMenu(menu);
-}).then(function(msg){
-	console.log(msg);
-});
-
 exports.reply = function* (next){
 	var message = this.weixin;
 
@@ -70,4 +64,12 @@ exports.reply = function* (next){
 	}
 
 	yield next;
+}
+
+exports.setMenu = function* (){
+	wechatApi.deleteMenu().then(function(){
+		return wechatApi.createMenu(menu);
+	}).then(function(msg){
+		console.log('createMenu:'+msg);
+	});
 }

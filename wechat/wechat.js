@@ -39,11 +39,14 @@ function Wechat(opts){     //构造函数
 Wechat.prototype.fetchAccessToken = function(){
 	var that = this;
 
+	// 如果this上已经存在有效的access_token，直接返回this对象
 	if(this.access_token && this.expires_in){
 		if(this.isvalidAccessToken(this)){
 			return Promise.resolve(this);
 		}
 	}
+
+	console.log('on access_token or invalid!')
 
 	this.getAccessToken().then(function(data){
 		try{
@@ -165,7 +168,7 @@ Wechat.prototype.delMaterial = function(mediaId){
 			var form = {media_id:mediaId}
 			request({url:url,method:'POST',formData:form,json:true}).then(function(response){
 				var _data = response.body;
-				if(_data.errcode === '0'){
+				if(_data.errcode === 0){
 					resolve();
 				}else{
 					throw new Error('delete permanent material failed!');
@@ -196,8 +199,8 @@ Wechat.prototype.createMenu = function(menu){
 			var url = api.menu.create + 'access_token=' + data.access_token;
 			request({url:url,method:'POST',body:menu,json:true}).then(function(response){
 				var _data = response.body;
-				if(_data.errcode === '0'){
-					resolve();
+				if(_data.errcode === 0){
+					resolve(_data.errmsg);
 				}else{
 					throw new Error('create menu failed!');
 				}
@@ -216,8 +219,9 @@ Wechat.prototype.getMenu = function(){
 			var url = api.menu.get + 'access_token=' + data.access_token;
 			request({url:url,json:true}).then(function(response){
 				var _data = response.body;
+				console.log('menu'+JSON.stringify(_data))
 				if(_data.menu){
-					resolve();
+					resolve(_data.menu);
 				}else{
 					throw new Error('get menu failed!');
 				}
@@ -228,7 +232,7 @@ Wechat.prototype.getMenu = function(){
 	});
 }
 
-//获取菜单
+//删除菜单
 Wechat.prototype.deleteMenu = function(){
 	var that = this;
 	return new Promise(function(resolve,reject){
@@ -236,8 +240,8 @@ Wechat.prototype.deleteMenu = function(){
 			var url = api.menu.delete + 'access_token=' + data.access_token;
 			request({url:url,json:true}).then(function(response){
 				var _data = response.body;
-				if(_data.errcode === '0'){
-					resolve();
+				if(_data.errcode === 0){
+					resolve(_data.errmsg);
 				}else{
 					throw new Error('delete menu failed!');
 				}
