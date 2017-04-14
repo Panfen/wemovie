@@ -23,8 +23,16 @@ var api = {
 		get:prefix+'menu/get?',        //access_token=ACCESS_TOKE  获取菜单,GET请求
 		delete:prefix+'menu/delete?',  //access_token=ACCESS_TOKEN	删除菜单,GET请求
 		getInfo:prefix+'get_current_selfmenu_info?'  //access_token=ACCESS_TOKEN  获取自定义菜单配置接口
+	},
+	groups:{
+		create:prefix+'groups/create?',  //access_token=ACCESS_TOKEN  创建分组，POST请求
+		get:prefix+'groups/get?',        //access_token=ACCESS_TOKE  查询所有分组,GET请求
+		getId:prefix+'groups/getid?',    //access_token=ACCESS_TOKEN  查询用户所在分组,POST请求
+		update:prefix+'groups/update?',  //access_token=ACCESS_TOKEN  修改分组名,POST请求
+		membersUpdate:prefix+'groups/members/update?',  //access_token=ACCESS_TOKEN  移动用户分组,POST请求
+		membersBatchupdate:prefix+'groups/members/batchupdate?', //access_token=ACCESS_TOKEN  批量移动用户分组,POST请求
+		delete:prefix+'groups/delete?'   //access_token=ACCESS_TOKEN	删除分组,POST请求
 	}
-
 }
 
 function Wechat(opts){     //构造函数
@@ -249,6 +257,86 @@ Wechat.prototype.deleteMenu = function(){
 				reject(err);
 			});
 		});
+	});
+}
+
+/**************************用户分组Groups******************************/
+
+Wechat.prototype.createGroup = function(name){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.groups.create + 'access_token=' + data.access_token;
+			var opts = {
+				group:{
+					name:name
+				}
+			};
+			request({method:'POST',url:url,body:opts,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.group){
+					resolve(_data.group);
+				}else{
+					throw new Error('create group failed: ' + _data.errmsg);
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
+
+Wechat.prototype.getGroups = function(name){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.groups.get + 'access_token=' + data.access_token;
+			request({url:url,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.groups){
+					resolve(_data.groups);
+				}else{
+					throw new Error('get groups failed: ' + _data.errmsg);
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
+
+var _deleteGroup = function(access_token,id){
+	var url = api.groups.delete + 'access_token=' + access_token;
+	var opts = {
+		group:{
+			id:id
+		}
+	};
+	return request({method:'POST',url:url,body:opts,json:true}).then(function(response){
+		var _data = response.body;
+		if(_data.groups){
+			resolve(_data.groups);
+		}else{
+			throw new Error('delete group:'+ id +' failed: ' + _data.errmsg);
+		}
+	}).catch(function(err){
+		reject(err);
+	});
+}
+
+Wechat.prototype.deleteGroups = function(ids){     //ids可以是单个的id，也可以是多个id组成的数组
+	var that = this;
+	that.fetchAccessToken().then(function(data){
+		var queue = [];
+		if(Array.isArray(ids)){
+			for(var i = 0; i < ids.length; i++)
+				queue.push(_deleteGroup(data.access_token,ids[i]));
+		}else{
+			queue.push(_deleteGroup(data.access_token,id));
+		}
+		Promise.all(queue).then(function(data){
+			console.log('data:' + data)
+		})
 	});
 }
 

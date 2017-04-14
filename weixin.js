@@ -59,6 +59,19 @@ exports.reply = function* (next){
 				url:'http://www.piaohua.com/html/dongzuo/2017/0409/31921.html'
 			}];
 		}
+		else if(content === '5'){
+			var group = yield wechatApi.createGroup('科幻电影迷');
+			console.log('分组："'+ group.name + '" 创建成功！');
+			var groups = yield wechatApi.getGroups();
+			console.log('获取到如下分组：\n'+ JSON.stringify(groups));
+			var msg = yield wechatApi.deleteGroups([101,104]);
+			console.log('msg:'+msg);
+			var groups = yield wechatApi.getGroups();
+			console.log('获取到如下分组：\n'+ JSON.stringify(groups));
+		}
+		else if(content === '获取分组'){
+			
+		}
 		// ... 其他回复类型
 		this.body = reply;
 	}
