@@ -267,12 +267,12 @@ Wechat.prototype.createGroup = function(name){
 	return new Promise(function(resolve,reject){
 		that.fetchAccessToken().then(function(data){
 			var url = api.groups.create + 'access_token=' + data.access_token;
-			var opts = {
+			var form = {
 				group:{
 					name:name
 				}
 			};
-			request({method:'POST',url:url,body:opts,json:true}).then(function(response){
+			request({method:'POST',url:url,body:form,json:true}).then(function(response){
 				var _data = response.body;
 				if(_data.group){
 					resolve(_data.group);
@@ -307,36 +307,118 @@ Wechat.prototype.getGroups = function(name){
 
 var _deleteGroup = function(access_token,id){
 	var url = api.groups.delete + 'access_token=' + access_token;
-	var opts = {
+	var form = {
 		group:{
 			id:id
 		}
 	};
-	return request({method:'POST',url:url,body:opts,json:true}).then(function(response){
-		var _data = response.body;
-		if(_data.groups){
-			resolve(_data.groups);
-		}else{
-			throw new Error('delete group:'+ id +' failed: ' + _data.errmsg);
-		}
-	}).catch(function(err){
-		reject(err);
+	return new Promise(function(resolve,reject){
+		request({method:'POST',url:url,body:form,json:true}).then(function(response){
+			var _data = response.body;
+			if(_data.errcode === 0){
+				resolve('ok');
+			}else{
+				throw new Error('delete group:'+ id +' failed: ' + _data.errmsg);
+			}
+		}).catch(function(err){
+			reject(err);
+		});
 	});
 }
 
-Wechat.prototype.deleteGroups = function(ids){     //ids可以是单个的id，也可以是多个id组成的数组
+Wechat.prototype.deleteGroups = function(ids){     //一个或多个id组成的数组
 	var that = this;
 	that.fetchAccessToken().then(function(data){
 		var queue = [];
-		if(Array.isArray(ids)){
-			for(var i = 0; i < ids.length; i++)
-				queue.push(_deleteGroup(data.access_token,ids[i]));
-		}else{
-			queue.push(_deleteGroup(data.access_token,id));
+		for(var i = 0; i < ids.length; i++){
+			queue.push(_deleteGroup(data.access_token,ids[i]));
 		}
 		Promise.all(queue).then(function(data){
-			console.log('data:' + data)
+			console.log('data:' + data);
+		}).catch(function(err){
+			console.log(err)
 		})
+	});
+}
+
+//通过用户的OpenID查询其所在的GroupID
+Wechat.prototype.getGroupidByOpenid = function(openid){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.groups.getid + 'access_token=' + data.access_token;
+			var form = {
+				openid:name
+			};
+			request({method:'POST',url:url,body:form,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.groupid){
+					resolve(_data.groupid);
+				}else{
+					throw new Error('get get GroupId by OpenId failed: ' + _data.errmsg);
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
+
+Wechat.prototype.updateGroup = function(groupid,name){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.groups.update + 'access_token=' + data.access_token;
+			var form = {
+				group:{
+					id:groupid,
+					name:name
+				}
+			};
+			request({method:'POST',url:url,body:form,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.errcode === 0){
+					resolve(_data.errmsg);
+				}else{
+					throw new Error('update group failed: ' + _data.errmsg);
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
+
+Wechat.prototype.moveUsersToGroup = function(openid,to_groupid){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = '';
+			var form = {}
+			if(openid && !Array.isArray(openid)) {   //单个用户分组
+				url = api.groups.membersUpdate + 'access_token=' + data.access_token;
+				form = {
+					openid:openid,
+					to_groupid:to_groupid
+				};
+			}else if(Array.isArray(openid)){
+				url = api.groups.membersBatchupdate + 'access_token=' + data.access_token;
+				form = {
+					openid_list:openid,
+					to_groupid:to_groupid
+				};
+			}
+			request({method:'POST',url:url,body:form,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.errcode === 0){
+					resolve(_data.errmsg);
+				}else{
+					throw new Error('update group failed: ' + _data.errmsg);
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
 	});
 }
 
