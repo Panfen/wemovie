@@ -32,6 +32,9 @@ var api = {
 		membersUpdate:prefix+'groups/members/update?',  //access_token=ACCESS_TOKEN  移动用户分组,POST请求
 		membersBatchupdate:prefix+'groups/members/batchupdate?', //access_token=ACCESS_TOKEN  批量移动用户分组,POST请求
 		delete:prefix+'groups/delete?'   //access_token=ACCESS_TOKEN	删除分组,POST请求
+	},
+	mass:{
+		sendall:prefix+'message/mass/sendall?',  //access_token=ACCESS_TOKEN 群发消息
 	}
 }
 
@@ -422,4 +425,35 @@ Wechat.prototype.moveUsersToGroup = function(openid,to_groupid){
 	});
 }
 
+
+Wechat.prototype.massSendMsg = function(type,message,groupid){
+	var that = this;
+	var msg = {
+		filter:{},
+		msgtype:type
+	}
+	if(!groupid){
+		msg.filter.is_to_all = true
+	}else{
+		msg.filter.is_to_all = false;
+		msg.filter.group_id = groupid;
+	}
+	msg[type] = message;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.mass.sendall + 'access_token=' + data.access_token;
+			
+			request({method:'POST',url:url,body:msg,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.errcode === 0){
+					resolve(_data);
+				}else{
+					throw new Error('send mass message failed: ' + _data.errmsg);
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
 module.exports = Wechat;
