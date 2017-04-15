@@ -68,6 +68,13 @@ exports.reply = function* (next){
 			var groups = yield wechatApi.getGroups();
 			console.log('获取到如下分组：\n'+ JSON.stringify(groups));
 		}
+		else if(content === '7'){
+			var text = {
+	      content:'这是群发消息测试唔~'
+	   	};
+			var msg = yield wechatApi.massSendMsg('text',text,114);
+			console.log('msg:'+ JSON.stringify(msg));
+		}
 		// ... 其他回复类型
 		this.body = reply;
 	}

@@ -442,7 +442,6 @@ Wechat.prototype.massSendMsg = function(type,message,groupid){
 	return new Promise(function(resolve,reject){
 		that.fetchAccessToken().then(function(data){
 			var url = api.mass.sendall + 'access_token=' + data.access_token;
-			
 			request({method:'POST',url:url,body:msg,json:true}).then(function(response){
 				var _data = response.body;
 				if(_data.errcode === 0){
@@ -456,4 +455,5 @@ Wechat.prototype.massSendMsg = function(type,message,groupid){
 		});
 	});
 }
+
 module.exports = Wechat;
