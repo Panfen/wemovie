@@ -33,6 +33,12 @@ var api = {
 		membersBatchupdate:prefix+'groups/members/batchupdate?', //access_token=ACCESS_TOKEN  批量移动用户分组,POST请求
 		delete:prefix+'groups/delete?'   //access_token=ACCESS_TOKEN	删除分组,POST请求
 	},
+	user:{
+		updateUserRemark:prefix+'user/info/updateremark?',  //access_token=ACCESS_TOKEN  修改用户备注名，POST请求
+		getUserInfo:prefix+'user/info?', //access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN  获取用户基本信息，GET请求
+		batchGetUserInfo:prefix+'user/info/batchget?',  //access_token=ACCESS_TOKEN，POST请求
+		getUserOpenIds:prefix+'user/get?',  //access_token=ACCESS_TOKEN&next_openid=NEXT_OPENID，GET请求
+	},
 	mass:{
 		sendall:prefix+'message/mass/sendall?',  //access_token=ACCESS_TOKEN 群发消息
 	}
@@ -425,6 +431,95 @@ Wechat.prototype.moveUsersToGroup = function(openid,to_groupid){
 	});
 }
 
+Wechat.prototype.updateUserRemark = function(openid,remark){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.user.updateUserRemark + 'access_token=' + data.access_token;
+			var form = {
+				openid:openid,
+				remark:remark
+			};
+			request({method:'POST',url:url,body:form,json:true}).then(function(response){
+				var _data = response.body;
+				if(_data.errcode === 0){
+					resolve(remark);
+				}else{
+					throw new Error('update user remark failed: ' + _data.errmsg);
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
+
+//获取单个或一批用户信息
+Wechat.prototype.fetchUserInfo = function(open_id,lang){
+	var that = this;
+	var lang = lang || 'zh_CN';
+	var url = '';
+	var opts = {}
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+
+			if(open_id && !Array.isArray(open_id)){   //单个获取
+				url = api.user.getUserInfo + 'access_token=' + data.access_token +'&openid='+ open_id +'&lang=' +lang;
+				opts = {
+					url:url,
+					json:true
+				}
+			}else if(open_id && Array.isArray(open_id)){
+				url = api.user.batchGetUserInfo + 'access_token=' + data.access_token;
+				var user_list = [];
+				for(var i=0;i<open_id.length;i++){
+					user_list.push({
+						openid:open_id[i],
+						lang:lang
+					});
+				}
+				opts = {
+					method:'POST',
+					url:url,
+					body:{
+						user_list:user_list
+					},
+					json:true
+				}
+			}
+			request(opts).then(function(response){
+				var _data = response.body;
+				if(!_data.errcode){
+					resolve(_data);
+				}else{
+					throw new Error('fetch user info failed: ' + _data.errmsg);
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
+
+Wechat.prototype.getUserOpenIds = function(next_openid){
+	var that = this;
+	return new Promise(function(resolve,reject){
+		that.fetchAccessToken().then(function(data){
+			var url = api.user.getUserOpenIds + 'access_token=' + data.access_token;
+			if(next_openid) url += '&next_openid=' + next_openid;
+			request({url:url,json:true}).then(function(response){
+				var _data = response.body;
+				if(!_data.errcode){
+					resolve(_data);
+				}else{
+					throw new Error('get user openIds failed: ' + _data.errmsg);
+				}
+			}).catch(function(err){
+				reject(err);
+			});
+		});
+	});
+}
 
 Wechat.prototype.massSendMsg = function(type,message,groupid){
 	var that = this;

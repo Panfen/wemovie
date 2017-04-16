@@ -69,6 +69,22 @@ exports.reply = function* (next){
 			console.log('获取到如下分组：\n'+ JSON.stringify(groups));
 		}
 		else if(content === '7'){
+			var remark = yield wechatApi.updateUserRemark(message.FromUserName,'芒果屋里的猫');
+			reply = "您的备注名已经被设置为："+remark;
+		}
+		else if(content === '8'){
+			var data1 = yield wechatApi.fetchUserInfo(message.FromUserName);
+			console.log(JSON.stringify(data1));
+			var data2 = yield wechatApi.fetchUserInfo([message.FromUserName]);
+			console.log(JSON.stringify(data2))
+		}
+		else if(content === '9'){
+			var data1 = yield wechatApi.getUserOpenIds();
+			console.log(JSON.stringify(data1));
+			var data2 = yield wechatApi.getUserOpenIds(message.FromUserName);
+			console.log(JSON.stringify(data2));
+		}
+		else if(content === '17'){
 			var text = {
 	      content:'这是群发消息测试唔~'
 	   	};
