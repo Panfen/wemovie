@@ -63,7 +63,7 @@ Wechat.prototype.fetchAccessToken = function(){
 		}
 	}
 
-	console.log('on access_token or invalid!')
+	console.log('no access_token or invalid!')
 
 	this.getAccessToken().then(function(data){
 		try{

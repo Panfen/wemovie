@@ -8,6 +8,7 @@
 var config = require('./config');
 var Wechat = require('./wechat/wechat');
 var menu = require('./menu');
+var crawler = require('./crawler/crawler')
 
 var wechatApi = new Wechat(config.wechat);
 
@@ -104,4 +105,10 @@ exports.setMenu = function* (){
 	}).then(function(msg){
 		console.log('createMenu:'+msg);
 	});
+}
+
+exports.sendMsg = function* (){
+	var movieList = yield crawler.getMovieList();
+	console.log(movieList);
+
 }
