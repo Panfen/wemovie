@@ -9,7 +9,15 @@ var URL = 'http://www.piaohua.com/';
 
 function getftpLink(link){
 	return new Promise(function(resolve,reject){
-		
+		request.get(link,function(err,res,body){
+			if(!err && res.statusCode == 200){
+				var $ = cheerio.load(body);
+				var ftp = $('#showinfo').find('table tbody tr td a').html();
+				resolve(ftp);
+			}else{
+				reject('failed to get the ftp');
+			}
+		});
 	});
 }
 
@@ -40,21 +48,11 @@ function getPageByUrl(){
 	});
 }
 
-exports.getMovieList = function() {
-	return new Promise(function(resolve,reject){
-		getPageByUrl().then(function(movieList){
-			for(var i=0;i<movieList.length;i++){
-				request.get(movieList[i].link,function(err,res,body){
-					if(!err && res.statusCode == 200){
-						var $ = cheerio.load(body);
-						var ftp = $('#showinfo').find('table tbody tr td a').html();
-						movieList[i].ftp = unescape(ftp.replace(/;/g,'').replace(/&#x/g, "%u"));
-					}else{
-						reject('failed to get the ftp!');
-					}
-				});	
-			}
-			resolve(movieList);
-		});
-	});
+exports.getMovieList = function* () {
+	var movieList = yield getPageByUrl();
+	for(var i = 0; i < movieList.length; i ++){
+		var ftp = yield getftpLink(movieList[i].link);
+		movieList[i].ftp = unescape(ftp.replace(/;/g,'').replace(/&#x/g, "%u"));
+	}
+	return movieList;
 };
