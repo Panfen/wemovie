@@ -10,7 +10,7 @@ module.exports = {
  	{	
     'type':'click',
     'name':'最新',
-    'key':'V1001_TODAY_MUSIC'
+    'key':'V1001_TODAY_LATEST'
   },
   {
     'name':'类别',
@@ -23,7 +23,7 @@ module.exports = {
     {
       'type':'click',
       'name':'悬疑',
-      'key':'V1001_TYPE_KXUANYI'
+      'key':'V1001_TYPE_XUANYI'
     },
     {
       'type':'click',
@@ -32,8 +32,8 @@ module.exports = {
     },
     {
       'type':'click',
-      'name':'教育',
-      'key':'V1001_TYPE_JIAOYU'
+      'name':'文艺',
+      'key':'V1001_TYPE_WENYI'
     }]
  	},
  	{
@@ -44,10 +44,20 @@ module.exports = {
       'name':'大陆',
       'key':'V1001_AREA_DALU'
     },
+    { 
+      'type':'click',
+      'name':'港台',
+      'key':'V1001_AREA_GANGTAI'
+    },
     {
       'type':'click',
       'name':'欧美',
       'key':'V1001_AREA_OUMEI'
+    },
+    {
+      'type':'click',
+      'name':'韩印',
+      'key':'V1001_AREA_HANGUO'
     }]
  	}]
 }

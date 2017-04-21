@@ -27,7 +27,8 @@ function* reply(next){
 		}else if(message.Event === 'LOCATION'){
 			this.body = '您上报的地理位置是：'+ message.Latitude + ',' + message.Longitude;
 		}else if(message.Event === 'CLICK'){
-			this.body = '您点击了菜单：'+ message.EventKey;
+			//点击自定义菜单
+			var movieList = yield wechatApi.getCrawlMovieList(message.EventKey)
 		}else if(message.Event === 'SCAN'){
 			this.body = '关注后扫描二维码：'+ message.Ticket;
 		}
@@ -95,7 +96,6 @@ function* reply(next){
 		// ... 其他回复类型
 		this.body = reply;
 	}
-
 	yield next;
 }
 
