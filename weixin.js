@@ -12,7 +12,7 @@ var crawler = require('./crawler/crawler')
 
 var wechatApi = new Wechat(config.wechat);
 
-exports.reply = function* (next){
+function* reply(next){
 	var message = this.weixin;
 
 	if(message.MsgType === 'event'){
@@ -39,7 +39,7 @@ exports.reply = function* (next){
 			reply = '金刚:骷髅岛';
 		}
 		else if(content === '2'){
-			var data = yield wechatApi.uploadTempMaterial('image',__dirname+'/public/king.jpg');
+			var data = yield wechatApi.uploadPermMaterial('other',__dirname+'/public/king.jpg');
 			reply = {
 				type:'image',
 				mediaId:data.media_id
@@ -99,7 +99,9 @@ exports.reply = function* (next){
 	yield next;
 }
 
-exports.setMenu = function* (){
+exports.reply = reply;
+
+exports.setMenu = function* (next){
 	wechatApi.deleteMenu().then(function(){
 		return wechatApi.createMenu(menu);
 	}).then(function(msg){
@@ -107,8 +109,35 @@ exports.setMenu = function* (){
 	});
 }
 
-exports.sendMsg = function* (){
+exports.sendMsg = function* (next){
+	console.log('开始爬取电影信息...');
 	var movieList = yield crawler.getMovieList();
-	console.log(movieList);
+	var articles = [];
+	for(var i = 0;i < movieList.length; i++){
+		var data = yield wechatApi.uploadPermMaterial('other',__dirname+'/public/king.jpg');
+		var article = {
+			title: movieList[i].name,
+			thumb_media_id: data.media_id,
+			author: 'panfen',
+			digest: '',
+			show_cover_pic: 1,
+			content: movieList[i].ftp,
+			content_source_url: movieList[i].link		
+		}
+		articles.push(article);
+	};
+	var newsData = yield wechatApi.uploadPermMaterial('news',articles);
+	console.log('media_id========>'+newsData.media_id)
+	var mpnews = {
+		filter:{
+			is_to_all:true,
+			group_id:0
+		},
+		mpnews:{
+			media_id:''
+		},
+		msgtype:'mpnews'
+	}
 
+	yield next;
 }

@@ -150,11 +150,16 @@ Wechat.prototype.uploadPermMaterial = function(type,material){
 				url:url,
 				json:true
 			}
-			(type == 'news') ? (opts.body = form) : (opts.formData = form);
+			if( type === 'news'){
+				opts.body = form;
+			}else{
+				opts.formData = form;
+			}
 			request(opts).then(function(response){
 				var _data = response.body;
 				if(_data){
-					resolve(_data)
+					console.log(_data);
+					resolve(_data);
 				}else{
 					throw new Error('upload permanent material failed!');
 				}
