@@ -28,7 +28,19 @@ function* reply(next){
 			this.body = '您上报的地理位置是：'+ message.Latitude + ',' + message.Longitude;
 		}else if(message.Event === 'CLICK'){
 			//点击自定义菜单
-			var movieList = yield wechatApi.getCrawlMovieList(message.EventKey)
+			var movieList = yield crawler.getCrawlMovieList(message.EventKey);
+			var messages = [];
+			movieList.forEach(function(item){
+				var msg = {
+					title:item.name,
+					description:item.ftp,
+					picUrl:item.img,
+					url:item.link
+				}
+				messages.push(msg);
+			});
+			console.log(JSON.stringify(messages));
+			this.body = messages;
 		}else if(message.Event === 'SCAN'){
 			this.body = '关注后扫描二维码：'+ message.Ticket;
 		}
@@ -86,6 +98,10 @@ function* reply(next){
 			var data2 = yield wechatApi.getUserOpenIds(message.FromUserName);
 			console.log(JSON.stringify(data2));
 		}
+		else if(content === '10'){
+			var data = yield wechatApi.getMenu();
+			console.log(JSON.stringify(data));
+		}
 		else if(content === '17'){
 			var text = {
 	      content:'这是群发消息测试唔~'
@@ -101,12 +117,37 @@ function* reply(next){
 
 exports.reply = reply;
 
+function isObjectValueEqual(a, b) {
+  var aProps = Object.getOwnPropertyNames(a);
+  var bProps = Object.getOwnPropertyNames(b);
+
+  if (aProps.length != bProps.length) {
+    return false;
+  }
+
+  for (var i = 0; i < aProps.length; i++) {
+    var propName = aProps[i];
+
+    if(a[propName] instanceof Object ){
+			if(!isObjectValueEqual(a[propName],b[propName])) return false;
+    }
+    else if (a[propName] !== b[propName]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 exports.setMenu = function* (next){
-	wechatApi.deleteMenu().then(function(){
-		return wechatApi.createMenu(menu);
-	}).then(function(msg){
-		console.log('createMenu:'+msg);
-	});
+	var menuData = yield wechatApi.getMenu();
+	console.log('menuData:'+JSON.stringify(menuData))
+	if(!isObjectValueEqual(menuData,menu)){
+		wechatApi.deleteMenu().then(function(){
+			return wechatApi.createMenu(menu);
+		}).then(function(msg){
+			console.log('createMenu:'+msg);
+		});
+	}
 }
 
 exports.sendMsg = function* (next){

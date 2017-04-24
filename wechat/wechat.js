@@ -241,7 +241,6 @@ Wechat.prototype.getMenu = function(){
 			var url = api.menu.get + 'access_token=' + data.access_token;
 			request({url:url,json:true}).then(function(response){
 				var _data = response.body;
-				console.log('menu'+JSON.stringify(_data))
 				if(_data.menu){
 					resolve(_data.menu);
 				}else{
