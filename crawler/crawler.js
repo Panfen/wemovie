@@ -68,9 +68,8 @@ function getListByEventKey(eventKey){
 				var dlList = $('#list dl');
 				var movieList = [];
 				dlList.each(function(index){
-					//选其5
-					if(index < 5){
-						var link = $(this).find('dt a').attr('href');
+					if(index < 5){  //选前5部电影
+						var link = URL + $(this).find('dt a').attr('href');
 						var img = $(this).find('dt a img').attr('src');
 						var name = $(this).find('dt a img').attr('alt').substr(25).replace('</font></b>','');
 						if(name == '') name = $(this).find('dt a img').attr('alt').substr(3).replace('</b>','');

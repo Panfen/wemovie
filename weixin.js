@@ -39,7 +39,6 @@ function* reply(next){
 				}
 				messages.push(msg);
 			});
-			console.log(JSON.stringify(messages));
 			this.body = messages;
 		}else if(message.Event === 'SCAN'){
 			this.body = '关注后扫描二维码：'+ message.Ticket;
@@ -140,7 +139,6 @@ function isObjectValueEqual(a, b) {
 
 exports.setMenu = function* (next){
 	var menuData = yield wechatApi.getMenu();
-	console.log('menuData:'+JSON.stringify(menuData))
 	if(!isObjectValueEqual(menuData,menu)){
 		wechatApi.deleteMenu().then(function(){
 			return wechatApi.createMenu(menu);
@@ -151,7 +149,6 @@ exports.setMenu = function* (next){
 }
 
 exports.sendMsg = function* (next){
-	console.log('开始爬取电影信息...');
 	var movieList = yield crawler.getMovieList();
 	var articles = [];
 	for(var i = 0;i < movieList.length; i++){
@@ -168,7 +165,6 @@ exports.sendMsg = function* (next){
 		articles.push(article);
 	};
 	var newsData = yield wechatApi.uploadPermMaterial('news',articles);
-	console.log('media_id========>'+newsData.media_id)
 	var mpnews = {
 		filter:{
 			is_to_all:true,

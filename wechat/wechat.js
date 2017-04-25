@@ -158,7 +158,6 @@ Wechat.prototype.uploadPermMaterial = function(type,material){
 			request(opts).then(function(response){
 				var _data = response.body;
 				if(_data){
-					console.log(_data);
 					resolve(_data);
 				}else{
 					throw new Error('upload permanent material failed!');
