@@ -16,5 +16,7 @@ wemovie系统拟爬取飘花电影网的内容，形成图文消息，推送到�
 - 爬取电影网站最新电影资讯；
 - 在公众号推送电影咨询。
 
+![show](./public/show.png)
+
 ### 3.补充说明
 目前处于持续更新中，欢迎star、fork、issue。相关博客地址：[nodejs微信公众号开发](https://segmentfault.com/a/1190000008976225)
