@@ -18,5 +18,8 @@ wemovie系统拟爬取飘花电影网的内容，形成图文消息，推送到�
 
 ![show](./public/show.png)
 
-### 3.补充说明
+### 3.使用说明
+下载程序，控制台进入对应目录，node app.js启动程序
+
+### 4.补充说明
 目前处于持续更新中，欢迎star、fork、issue。相关博客地址：[nodejs微信公众号开发](https://segmentfault.com/a/1190000008976225)
