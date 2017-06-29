@@ -150,11 +150,15 @@ Wechat.prototype.uploadPermMaterial = function(type,material){
 				url:url,
 				json:true
 			}
-			(type == 'news') ? (opts.body = form) : (opts.formData = form);
+			if( type === 'news'){
+				opts.body = form;
+			}else{
+				opts.formData = form;
+			}
 			request(opts).then(function(response){
 				var _data = response.body;
 				if(_data){
-					resolve(_data)
+					resolve(_data);
 				}else{
 					throw new Error('upload permanent material failed!');
 				}
@@ -236,7 +240,6 @@ Wechat.prototype.getMenu = function(){
 			var url = api.menu.get + 'access_token=' + data.access_token;
 			request({url:url,json:true}).then(function(response){
 				var _data = response.body;
-				console.log('menu'+JSON.stringify(_data))
 				if(_data.menu){
 					resolve(_data.menu);
 				}else{

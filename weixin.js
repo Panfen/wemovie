@@ -12,7 +12,7 @@ var crawler = require('./crawler/crawler')
 
 var wechatApi = new Wechat(config.wechat);
 
-exports.reply = function* (next){
+function* reply(next){
 	var message = this.weixin;
 
 	if(message.MsgType === 'event'){
@@ -27,7 +27,19 @@ exports.reply = function* (next){
 		}else if(message.Event === 'LOCATION'){
 			this.body = '您上报的地理位置是：'+ message.Latitude + ',' + message.Longitude;
 		}else if(message.Event === 'CLICK'){
-			this.body = '您点击了菜单：'+ message.EventKey;
+			//点击自定义菜单
+			var movieList = yield crawler.getCrawlMovieList(message.EventKey);
+			var messages = [];
+			movieList.forEach(function(item){
+				var msg = {
+					title:item.name,
+					description:item.ftp,
+					picUrl:item.img,
+					url:item.link
+				}
+				messages.push(msg);
+			});
+			this.body = messages;
 		}else if(message.Event === 'SCAN'){
 			this.body = '关注后扫描二维码：'+ message.Ticket;
 		}
@@ -85,6 +97,10 @@ exports.reply = function* (next){
 			var data2 = yield wechatApi.getUserOpenIds(message.FromUserName);
 			console.log(JSON.stringify(data2));
 		}
+		else if(content === '10'){
+			var data = yield wechatApi.getMenu();
+			console.log(JSON.stringify(data));
+		}
 		else if(content === '17'){
 			var text = {
 	      content:'这是群发消息测试唔~'
@@ -106,7 +122,6 @@ exports.reply = function* (next){
 		// ... 其他回复类型
 		this.body = reply;
 	}
-
 	yield next;
 }
 
@@ -118,6 +133,6 @@ exports.setMenu = function* (){
 	});
 }
 
-exports.sendMsg = function* (){
+exports.sendMsg = function* (next){
 	var movieList = yield crawler.getMovieList();
 }
