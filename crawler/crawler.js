@@ -43,6 +43,8 @@ function getPageByUrl(){
 exports.getMovieList = function() {
 	return new Promise(function(resolve,reject){
 		getPageByUrl().then(function(movieList){
+			console.log('hha')
+			console.log(movieList)
 			for(var i=0;i<movieList.length;i++){
 				request.get(movieList[i].link,function(err,res,body){
 					if(!err && res.statusCode == 200){

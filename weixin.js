@@ -39,14 +39,14 @@ exports.reply = function* (next){
 			reply = '金刚:骷髅岛';
 		}
 		else if(content === '2'){
-			var data = yield wechatApi.uploadTempMaterial('image',__dirname+'/public/king.jpg');
+			var data = yield wechatApi.uploadTempMaterial('image',__dirname + '/public/king.jpg');
 			reply = {
 				type:'image',
 				mediaId:data.media_id
 			}
 		}
 		else if(content === '3'){
-			var data = yield wechatApi.uploadTempMaterial('voice',__dirname+'/public/aiyou.mp3');
+			var data = yield wechatApi.uploadTempMaterial('voice',__dirname + '/public/aiyou.mp3');
 			reply = {
 				type:'voice',
 				mediaId:data.media_id
@@ -92,6 +92,17 @@ exports.reply = function* (next){
 			var msg = yield wechatApi.massSendMsg('text',text,114);
 			console.log('msg:'+ JSON.stringify(msg));
 		}
+		else if(content === '18'){
+			var data = yield wechatApi.uploadTempMaterial('video', __dirname + '/public/vuejs.mp4');
+			console.log(data);
+			reply = {
+				type: 'video',
+				title: 'vuejs',
+				description: 'vuejs入门介绍',
+				mediaId: data.media_id
+			}
+			console.log(reply);
+		}
 		// ... 其他回复类型
 		this.body = reply;
 	}
@@ -103,12 +114,10 @@ exports.setMenu = function* (){
 	wechatApi.deleteMenu().then(function(){
 		return wechatApi.createMenu(menu);
 	}).then(function(msg){
-		console.log('createMenu:'+msg);
+		console.log('createMenu:' + msg);
 	});
 }
 
 exports.sendMsg = function* (){
 	var movieList = yield crawler.getMovieList();
-	console.log(movieList);
-
 }
