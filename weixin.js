@@ -125,6 +125,8 @@ function* reply(next){
 	yield next;
 }
 
+exports.reply = reply;
+
 exports.setMenu = function* (){
 	wechatApi.deleteMenu().then(function(){
 		return wechatApi.createMenu(menu);
