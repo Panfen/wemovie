@@ -9,8 +9,6 @@ var app = new Koa();
 
 app.use(wechat(config.wechat,weixin.reply)); //handler
 
-//app.use(weixin.sendMsg);
-
 app.use(weixin.setMenu);
 
 app.listen(8080);

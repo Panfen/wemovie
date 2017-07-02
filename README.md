@@ -21,5 +21,8 @@ wemovie系统拟爬取飘花电影网的内容，形成图文消息，推送到�
 ### 3.使用说明
 下载程序，控制台进入对应目录，node app.js启动程序
 
-### 4.补充说明
-目前处于持续更新中，欢迎star、fork、issue。相关博客地址：[nodejs微信公众号开发](https://segmentfault.com/a/1190000008976225)
+### 4.注意点
+- 如果出现错误提示：...node_modules\cheerio\lib\parse.js:55，说明飘花网对此类爬虫请求已经做出屏蔽，试试别的电影网站吧
+
+### 5.补充说明
+目前处于持续更新中，欢迎star、fork。相关博客地址：[nodejs微信公众号开发](https://segmentfault.com/a/1190000008976225)

@@ -134,7 +134,3 @@ exports.setMenu = function* (){
 		console.log('createMenu:' + msg);
 	});
 }
-
-exports.sendMsg = function* (next){
-	var movieList = yield crawler.getMovieList();
-}
