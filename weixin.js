@@ -57,6 +57,14 @@ function* reply(next){
 				mediaId:data.media_id
 			}
 		}
+
+		/*
+			注意：
+			如果是被动回复视频消息，不建议在用户发送数字后上传资源再回复用户，
+			上传视频需要时间，但是如果在5秒内未回复用户的消息，微信会提示系统服务不可用，
+			所以视频必须是提前先上传好的，只需要获取其media_id，再回复用户就可以。
+		*/ 
+		
 		else if(content === '3'){
 			var data = yield wechatApi.uploadTempMaterial('voice',__dirname+'/public/aiyou.mp3');
 			reply = {
@@ -114,8 +122,6 @@ function* reply(next){
 	yield next;
 }
 
-exports.reply = reply;
-
 function isObjectValueEqual(a, b) {
   var aProps = Object.getOwnPropertyNames(a);
   var bProps = Object.getOwnPropertyNames(b);
@@ -136,6 +142,8 @@ function isObjectValueEqual(a, b) {
   }
   return true;
 }
+
+exports.reply = reply;
 
 exports.setMenu = function* (next){
 	var menuData = yield wechatApi.getMenu();
@@ -175,6 +183,5 @@ exports.sendMsg = function* (next){
 		},
 		msgtype:'mpnews'
 	}
-
 	yield next;
 }
