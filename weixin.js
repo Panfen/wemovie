@@ -4,7 +4,6 @@
  */
 'use strict'
 
-
 var config = require('./config');
 var Wechat = require('./wechat/wechat');
 var menu = require('./menu');
@@ -12,7 +11,7 @@ var crawler = require('./crawler/crawler')
 
 var wechatApi = new Wechat(config.wechat);
 
-function* reply(next){
+exports.reply = function* (next){
 	var message = this.weixin;
 
 	if(message.MsgType === 'event'){
@@ -54,17 +53,10 @@ function* reply(next){
 			var data = yield wechatApi.uploadTempMaterial('image',__dirname + '/public/king.jpg');
 			reply = {
 				type:'image',
-				mediaId:data.media_id
+				mediaId:data.media_id  
 			}
+			//mediaId是一长串字符：ZnQUQks2KrDL8sTxh6tnkFHl-XEOTK-tFmDEo_g0NmCKt1XKlphpLkvcDsNuUC4l
 		}
-
-		/*
-			注意：
-			如果是被动回复视频消息，不建议在用户发送数字后上传资源再回复用户，
-			上传视频需要时间，但是如果在5秒内未回复用户的消息，微信会提示系统服务不可用，
-			所以视频必须是提前先上传好的，只需要获取其media_id，再回复用户就可以。
-		*/ 
-		
 		else if(content === '3'){
 			var data = yield wechatApi.uploadTempMaterial('voice',__dirname + '/public/aiyou.mp3');
 			reply = {
@@ -109,14 +101,21 @@ function* reply(next){
 			var data = yield wechatApi.getMenu();
 			console.log(JSON.stringify(data));
 		}
-		else if(content === '17'){
+		else if(content === '11'){
 			var text = {
 	      content:'这是群发消息测试唔~'
 	   	};
 			var msg = yield wechatApi.massSendMsg('text',text,114);
 			console.log('msg:'+ JSON.stringify(msg));
 		}
-		else if(content === '18'){
+		/*
+			注意：
+			如果是被动回复视频消息，不建议在用户发送数字后上传资源再回复用户，
+			上传视频需要时间，如果未能在5秒内回复用户的消息，微信会提示系统服务不可用，
+			所以视频必须是提前先上传好的，只需要获取其media_id，再回复用户就可以。
+		*/ 
+		/*
+		else if(content === '12'){
 			var data = yield wechatApi.uploadTempMaterial('video', __dirname + '/public/vuejs.mp4');
 			console.log(data);
 			reply = {
@@ -127,6 +126,7 @@ function* reply(next){
 			}
 			console.log(reply);
 		}
+		*/
 		// ... 其他回复类型
 		this.body = reply;
 	}
@@ -153,8 +153,6 @@ function isObjectValueEqual(a, b) {
   }
   return true;
 }
-
-exports.reply = reply;
 
 exports.setMenu = function* (next){
 	var menuData = yield wechatApi.getMenu();
