@@ -3,11 +3,11 @@
 var Koa = require('koa');
 var config = require('./config');
 var weixin = require('./weixin');
-var wechat = require('./wechat/generator');
+var generator = require('./wechat/generator');
 
 var app = new Koa();
 
-app.use(wechat(config.wechat,weixin.reply)); //handler
+app.use(generator(config.wechat, weixin.reply)); //handler
 
 app.use(weixin.setMenu);
 
